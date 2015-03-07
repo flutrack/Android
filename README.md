@@ -1,7 +1,7 @@
 ##Tips for using the app through Eclipse or Android Studio
-The app was developed in Eclipse. If you are using Android studio follow [these instructions](https://developer.android.com/sdk/installing/migrate.html) in order to successfully import it. 
+If you are using Android studio follow [these instructions](https://developer.android.com/sdk/installing/migrate.html), otherwise for Eclipse just select Import -> Existing Android Code Into Workspace. In both cases make sure that you have the lastest version of google play services installed.
 
-In the fluMap and reportFlu fragments replace the empty values with the urls for the get_json.php and submit_flu.php files.
+In the fluMap and reportSymptoms fragments replace the empty string values (url2, url) with the urls for the get_json.php and submit_flu.php files.
 
-Unless you are using an Android Emulator, make sure that your device can run at least Android 4.0 (Api Level: 14).
+Unless you are using an Android Emulator, **your device must run at least Android 4.0 (Api Level: 14)**.
 

@@ -14,5 +14,5 @@ dependencies {
 
 In the fluMap and reportSymptoms fragments replace the empty string values (url2, url) with the urls for the get_json.php and submit_flu.php files.
 
-Unless you are using an Android Emulator, you need a device that can run at least **Android 4.0 (Api Level: 14)** in order to use or debug the changes that you have made to the FluTrack app.
+Unless you are using an Android Emulator, you need a device that can run at least **Android 4.0 (Api Level: 14)** in order to run the app or debug the changes that you have made to the source code.
 

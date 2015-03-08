@@ -6,10 +6,10 @@ If you want to import the project to Android Studio follow [these instructions](
 If after importing the project Eclipse or Android Studio do not recognize the APIs that the google play services library provides:
 
 
-1. For Eclipse :To add the dependency to Google Play Services into the project go to Project -> Properties -> Android -> Library, Add -> google-play-services_lib.
+1. *For Eclipse* :To add the dependency to Google Play Services into the project go to Project -> Properties -> Android -> Library, Add -> google-play-services_lib.
 
 
-2. For Android Studio: Go to File -> Project Structure -> Select 'Project Settings' -> Select 'Dependencies' Tab Click '+' -> 1.Library Dependencies -> Select com.google.android.gms:play-services:+.
+2. *For Android Studio*: Go to File -> Project Structure -> Select 'Project Settings' -> Select 'Dependencies' Tab Click '+' -> 1.Library Dependencies -> Select com.google.android.gms:play-services:+.
         Alternatively you can import the library by modifying the build.gradle file inside your application module directory. Add a new build rule under dependencies for the latest version of play-services. For example:
         
 ```

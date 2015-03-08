@@ -21,5 +21,5 @@ dependencies {
    
 After the project is successfully built change the empty string values (url2, url) located inside the fluMap and reportSymptoms fragments with the URLs for the get_json.php and submit_flu.php files.
 
-Unless you are using an Android Emulator, you need a device that can run at least **Android 4.0 (Api Level: 14)**.
+Unless you are using an Android Emulator, you will need a device that can run at least **Android 4.0 (Api Level: 14)** in order to test the app without problems.
 

@@ -57,11 +57,12 @@ public class reportSymptoms extends Fragment {
 		spinner.setItems(symptoms);
 		radioGroup = (RadioGroup) view.findViewById(R.id.radioGroup);
 		button = (Button) view.findViewById(R.id.button);
+		sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
 		button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				List<String> selected = spinner.getSelectedStrings();
-				if (!selected.isEmpty()) {
+				if (!selected.isEmpty() && sharedPref.getString("latitude", null) != null ) {
 					if (isOnline()) {
 						new submitReport().execute();
 					} else {

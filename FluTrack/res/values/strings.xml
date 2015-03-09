@@ -7,6 +7,6 @@
     <string name="string1">I have the flu</string>
     <string name="string2">Someone near me has the flu</string>
     <string name="retry_strn">Retry</string>
-    <string name="txt_strn">The app requires internet connection and location services</string>
+    <string name="txt_strn">The app requires an active Internet Connection and enabled Location Services</string>
         
 </resources>

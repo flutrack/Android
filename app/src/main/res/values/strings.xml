@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Flutrack</string>
+    <string name="google_maps_key" translatable="false" templateMergeStrategy="preserve">
+        AIzaSyCj4Kkc9rGsNXllLxt-J6AdWcq-2I1FrxM
+    </string>
+    <string name="action_settings">Settings</string>
+    <string name="materialDialogTitle">Create a Report</string>
+    <string name="choose">Submit Report</string>
+    <string name="multiChoice">Flu Symptoms</string>
+</resources>

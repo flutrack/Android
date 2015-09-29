@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="fluSymptoms">
+        <item>Headache</item>
+        <item>Sore Throat</item>
+        <item>Sneezing</item>
+        <item>Chills</item>
+        <item>Runny Nose</item>
+        <item>Fever</item>
+        <item>Dry Cough</item>
+    </string-array>
+</resources>

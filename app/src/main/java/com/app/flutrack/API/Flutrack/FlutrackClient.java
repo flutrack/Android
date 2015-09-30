@@ -11,6 +11,7 @@ public class FlutrackClient {
         if (sFlutrackService == null) {
             RestAdapter restAdapter = new RestAdapter.Builder()
                     .setEndpoint("http://api.flutrack.org")
+                    .setLogLevel(RestAdapter.LogLevel.FULL) // this is the important line
                     .build();
             sFlutrackService = restAdapter.create(FlutrackApiInterface.class);
         }

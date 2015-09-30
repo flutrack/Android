@@ -1,29 +1,52 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <include
-        android:id="@+id/tool_bar"
-        layout="@layout/tool_bar"
-        android:layout_height="wrap_content"
+    <fragment
+        android:id="@+id/map"
         android:layout_width="match_parent"
-        />
-
-    <com.app.flutrack.Tabs.SlidingTabLayout
-        android:id="@+id/tabs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="2dp"
-        android:background="@color/ColorPrimary"/>
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/pager"
         android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:layout_weight="1">
-    </android.support.v4.view.ViewPager>
+        class="com.google.android.gms.maps.SupportMapFragment">
 
-</LinearLayout>
+        <com.getbase.floatingactionbutton.FloatingActionsMenu
+            android:id="@+id/floating_actions_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            fab:fab_addButtonColorNormal="@color/white"
+            fab:fab_addButtonColorPressed="@color/white_pressed"
+            fab:fab_addButtonPlusIconColor="@color/half_black"
+            fab:fab_addButtonSize="mini"
+            fab:fab_labelStyle="@style/menu_labels_style"
+            android:layout_marginBottom="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp">
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/weather_forecast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_title="Weather Forecast"
+                fab:fab_colorNormal="@color/pink"
+                fab:fab_colorPressed="@color/pink_pressed"
+                fab:fab_size="mini"/>
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/flu_report"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_title="Flu Report"
+                fab:fab_colorNormal="@color/pink"
+                fab:fab_colorPressed="@color/pink_pressed"
+                fab:fab_size="mini"/>
+
+        </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+    </fragment>
+
+</RelativeLayout>

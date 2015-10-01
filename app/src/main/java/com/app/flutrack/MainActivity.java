@@ -13,10 +13,12 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter;
+import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem;
 import com.app.flutrack.API.Flutrack.FlutrackClient;
 import com.app.flutrack.API.OpenWeather.OpenWeatherClient;
-import com.app.flutrack.Models.CurrentWeather;
 import com.app.flutrack.Models.Flutrack;
+import com.app.flutrack.Models.WeeklyWeatherForecast;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -31,7 +33,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.apache.commons.lang3.text.WordUtils;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -141,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     * Map is ready for use.
+     * Callback that informs that the GoogleMap is ready for use.
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -180,15 +185,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         OpenWeatherClient.
                 getOpenWeatherApiClient().
                 getOpenWeatherData(currentLocation.getLatitude(), currentLocation.getLongitude(),
-                        new Callback<CurrentWeather>() {
+                        new Callback<WeeklyWeatherForecast>() {
                             @Override
-                            public void success(CurrentWeather result, Response response) {
-
-                                String currentForecast = String.format("%s\n%s\n%.2f ℃\n",
-                                        result.getLocationName(),
-                                        WordUtils.capitalize(result.getWeather().get(0).getDescription()),
-                                        result.getMain().getTemperature());
-                                WeatherForecastDialog(currentForecast);
+                            public void success(WeeklyWeatherForecast result, Response response) {
+                                showWeeklyWeatherForecast(result);
                             }
 
                             @Override
@@ -227,12 +227,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     * A dialog that displays weather information
+     * Displays the weather information using a simple list dialog layout.
      */
-    private void WeatherForecastDialog(String currentForecast) {
+    private void showWeeklyWeatherForecast(WeeklyWeatherForecast forecast) {
+        final MaterialSimpleListAdapter adapter = new MaterialSimpleListAdapter(this);
+        WeeklyWeatherForecast.City city = forecast.getCity();
+        ArrayList<WeeklyWeatherForecast.List> list = forecast.getList();
+
+        for (int i = 0; i < list.size(); i++) {
+            adapter.add(new MaterialSimpleListItem.Builder(this)
+                    .content(formatWeatherOutput(list.get(i)))
+                    .build());
+        }
+
         new MaterialDialog.Builder(this)
-                .title("Weather Forecast")
-                .content(currentForecast)
+                .title("Forecast for " + city.getName() + ", " + city.getCountry())
+                .adapter(adapter, new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                    }
+                })
                 .show();
     }
 
@@ -264,6 +278,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .show();
     }
 
+    /**
+     * Converts a UNIX timestamp to a proper Date format and then finds the corresponding day of
+     * the week for that date.
+     */
+    private String timestampToDay(int timestamp) {
+        Timestamp stamp = new Timestamp((long) timestamp * 1000);
+        Date date = new Date(stamp.getTime());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("E");
+
+        return simpleDateFormat.format(date);
+    }
+
+    /**
+     * Formats the Weather output that will be displayed in the MaterialDialog List.
+     */
+    private String formatWeatherOutput(WeeklyWeatherForecast.List list) {
+        String weather = String.format("%s - %s, %.2f℃",
+                timestampToDay(list.getDt()), WordUtils.capitalize(list.getWeather().get(0).getDescription()),
+                list.getTemp().getDay());
+
+        return weather;
+    }
 
     /**
      * Displays various messages to the user.

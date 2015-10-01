@@ -18,6 +18,11 @@ import com.app.flutrack.API.OpenWeather.OpenWeatherClient;
 import com.app.flutrack.Models.CurrentWeather;
 import com.app.flutrack.Models.Flutrack;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -28,16 +33,17 @@ import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.ArrayList;
 
-import io.nlopez.smartlocation.SmartLocation;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
+        ConnectionCallbacks, OnConnectionFailedListener {
 
+    protected GoogleApiClient googleApiClient;
+    protected Location lastLocation;
     private GoogleMap mMap;
     private String numberOfDays = "7";
-    private Location currentLocation;
 
     /**
      * A  BroadcastReceiver that transmits system wide events concerning changes in the device's
@@ -65,54 +71,100 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
+        /**
+         * Retain the map fragment across activity restarts (e.g., from screen rotations).
+         */
         if (savedInstanceState == null) {
+
+            // First incarnation of this activity.
             mapFragment.setRetainInstance(true);
         }
 
         mapFragment.getMapAsync(this);
+        buildGoogleApiClient();
     }
 
     @Override
-    public void onResume() {
+    protected void onStart() {
+        super.onStart();
+        googleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (googleApiClient.isConnected()) {
+            googleApiClient.disconnect();
+        }
+    }
+
+    @Override
+    protected void onResume() {
         super.onResume();
 
-        //Specify the system action that the BroadcastReceiver will be associated with.
+        // Specify the system action that the BroadcastReceiver will be associated with.
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+
+        // Start the BroadcastReceiver.
         registerReceiver(networkStateReceiver, filter);
     }
 
     @Override
-    public void onPause() {
+    protected void onPause() {
         super.onPause();
 
-        // Unregister the receiver when the user pauses the app to avoid unnecessary workload.
+        // Unregister the BroadcastReceiver when the user pauses the app, in order to avoid
+        // unnecessary workload.
         unregisterReceiver(networkStateReceiver);
     }
 
+    /**
+     * Builds a GoogleApiClient.
+     */
+    protected synchronized void buildGoogleApiClient() {
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
 
+    /**
+     * Runs when a GoogleApiClient object successfully connects.
+     */
+    @Override
+    public void onConnected(Bundle connectionHint) {
+
+        // Gets the best and most recent location currently available, which may be null
+        // in rare cases when a location is not available.
+        lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+    }
+
+    /**
+     * Map is ready for use.
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
         final FloatingActionButton fluReport = (FloatingActionButton) findViewById(R.id.flu_report);
+        final FloatingActionButton weatherForecast = (FloatingActionButton) findViewById(R.id.weather_forecast);
+
         fluReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                currentLocation = getUserLocation();
-                if (currentLocation != null) {
-                    FluSymptomsDialog(currentLocation);
+                if (lastLocation != null) {
+                    FluSymptomsDialog(lastLocation);
                 } else {
                     showToast("Location not available");
                 }
             }
         });
-        final FloatingActionButton weatherForecast = (FloatingActionButton) findViewById(R.id.weather_forecast);
+
         weatherForecast.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                currentLocation = getUserLocation();
-                if (currentLocation != null) {
-                    downloadOpenWeatherData(currentLocation);
+                if (lastLocation != null) {
+                    downloadOpenWeatherData(lastLocation);
                 } else {
                     showToast("Location not available");
                 }
@@ -120,11 +172,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private Location getUserLocation() {
-        Location lastLocation = SmartLocation.with(getApplication()).location().getLastLocation();
-        return lastLocation;
-    }
-
+    /**
+     * Downloads weather information regarding the user's current location. Uses the OpenWeather API
+     * to gather the necessary data.
+     */
     private void downloadOpenWeatherData(final Location currentLocation) {
         OpenWeatherClient.
                 getOpenWeatherApiClient().
@@ -146,39 +197,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             }
                         });
     }
-
-    private void WeatherForecastDialog(String currentForecast) {
-        new MaterialDialog.Builder(this)
-                .title(R.string.weatherForecastDialogTitle)
-                .content(currentForecast)
-                .show();
-    }
-
-    private void FluSymptomsDialog(Location currentLocation) {
-        new MaterialDialog.Builder(this)
-                .title(R.string.fluSymptomsDialogTitle)
-                .items(R.array.fluSymptoms)
-                .itemsCallbackMultiChoice(null, new MaterialDialog.ListCallbackMultiChoice() {
-                    @Override
-                    public boolean onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
-                        StringBuilder str = new StringBuilder();
-
-                        for (int i = 0; i < which.length; i++) {
-                            if (i > 0) {
-                                str.append(',');
-                                str.append(' ');
-                            }
-                            str.append(text[i]);
-                        }
-                        // postFluReport((str.toString()),currentLocation.getLatitude(),
-                        //  currentLocation.getLongitude());
-                        return true;
-                    }
-                })
-                .positiveText(R.string.choose)
-                .show();
-    }
-
 
     /**
      * Uses the Flutrack API to download and add to the GoogleMap tweets associated with the
@@ -208,6 +226,44 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
     }
 
+    /**
+     * A dialog that displays weather information
+     */
+    private void WeatherForecastDialog(String currentForecast) {
+        new MaterialDialog.Builder(this)
+                .title("Weather Forecast")
+                .content(currentForecast)
+                .show();
+    }
+
+    /**
+     * Multi-choice dialog for reporting flu symptoms.
+     */
+    private void FluSymptomsDialog(Location currentLocation) {
+        new MaterialDialog.Builder(this)
+                .title(R.string.fluSymptomsDialogTitle)
+                .items(R.array.fluSymptomsArray)
+                .itemsCallbackMultiChoice(null, new MaterialDialog.ListCallbackMultiChoice() {
+                    @Override
+                    public boolean onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
+                        StringBuilder str = new StringBuilder();
+
+                        for (int i = 0; i < which.length; i++) {
+                            if (i > 0) {
+                                str.append(',');
+                                str.append(' ');
+                            }
+                            str.append(text[i]);
+                        }
+                        // postFluReport((str.toString()),currentLocation.getLatitude(),
+                        //  currentLocation.getLongitude());
+                        return true;
+                    }
+                })
+                .positiveText(R.string.choose)
+                .show();
+    }
+
 
     /**
      * Displays various messages to the user.
@@ -224,6 +280,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected());
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        showToast("Connection failed");
+    }
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+
+        showToast("Connection suspended");
+
+        // Attempt to re-establish the connection.
+        googleApiClient.connect();
     }
 
 }

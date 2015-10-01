@@ -40,8 +40,8 @@ import retrofit.client.Response;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
         ConnectionCallbacks, OnConnectionFailedListener {
 
-    protected GoogleApiClient googleApiClient;
-    protected Location lastLocation;
+    private GoogleApiClient googleApiClient;
+    private Location lastLocation;
     private GoogleMap mMap;
     private String numberOfDays = "7";
 
@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     * Map is ready for use.
+     * Callback that notifies that the GoogleMap is ready for use.
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -266,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     /**
-     * Displays various messages to the user.
+     * Displays messages to the user.
      */
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();

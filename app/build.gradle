@@ -32,8 +32,6 @@ dependencies {
     }
     compile 'com.google.code.gson:gson:2.3'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
-    compile 'com.google.maps.android:android-maps-utils:0.4+'
-
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.getbase:floatingactionbutton:1.10.0'
     compile 'org.apache.commons:commons-lang3:3.4'

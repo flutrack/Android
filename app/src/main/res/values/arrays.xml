@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="fluSymptoms">
+    <string-array name="fluSymptomsArray">
         <item>Headache</item>
         <item>Sore Throat</item>
         <item>Sneezing</item>

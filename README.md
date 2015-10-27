@@ -1,3 +1,4 @@
 # Flutrack Android Application
-The user has the ability to see various flu cases, represented by a marker in GoogleMap, across the globe while also being able to read a 7-day weather forecast for their current location.
-Additionally, the user can submit a flu report to the Flutrack database. 
+## Installation steps
+1. Replace the google_maps_key string found in *app/src/main/res/values/strings.xml* with your own. Follow this  [guide](https://developers.google.com/maps/documentation/android-api/start), in order to generate one.
+2. Get an openweathermap [API key](http://openweathermap.org/appid) and add it in *app/src/main/java/com/app/flutrack/API/OpenWeather/OpenWeatherApiInterface.java*.
